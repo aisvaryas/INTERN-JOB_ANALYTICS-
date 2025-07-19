@@ -9,7 +9,7 @@ df = pd.read_csv("enhanced_internship_jobs_dataset.csv")
 
 st.set_page_config(layout="wide")
 st.title("🌐 Job Analytics Dashboard")
-
+st.markdown("### All data is sourced from the Indeed job portal.")
 # --- Sidebar Filters ---
 st.sidebar.header("🔍 Filter Jobs")
 
