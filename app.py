@@ -18,7 +18,7 @@ selected_gender = st.sidebar.multiselect("Select Gender", df["gender_preference"
 selected_qualification = st.sidebar.multiselect("Select Qualification", df["qualification"].unique(), default=df["qualification"].unique())
 selected_jobtype = st.sidebar.multiselect("Select Employment Type", df["employment_type"].unique(), default=df["employment_type"].unique())
 selected_title = st.sidebar.multiselect("Select Job Title", df["job_title"].unique(), default=df["job_title"].unique())
-selected_portal = st.sidebar.multiselect("Select Job Portal", df["job_portal"].unique(), default=df["job_portal"].unique())
+
 salary_range = st.sidebar.slider("Minimum Salary (USD)", 0, int(df["salary_usd"].max()), 0)
 min_exp = st.sidebar.slider("Minimum Experience (Years)", 0, int(df["experience_years"].max()), 0)
 selected_date = st.sidebar.date_input("Posting Date before", pd.to_datetime("2025-01-01"))
@@ -30,7 +30,6 @@ filtered_df = df[
     (df["qualification"].isin(selected_qualification)) &
     (df["employment_type"].isin(selected_jobtype)) &
     (df["job_title"].isin(selected_title)) &
-    (df["job_portal"].isin(selected_portal)) &
     (df["salary_usd"] >= salary_range) &
     (df["experience_years"] >= min_exp)
 ]
@@ -142,7 +141,6 @@ special_df = df[
     (df["job_title"].isin(["Data Scientist", "Art Teacher", "AeroSpace Engineer"])) &
     (df["salary_usd"] > 10000) &
     (df["gender_preference"] == "Female") &
-    (df["job_portal"] == "Indeed") &
     (pd.to_datetime(df["posting_date"], errors="coerce") < pd.to_datetime("2023-08-01", errors="coerce"))
 ]
 
