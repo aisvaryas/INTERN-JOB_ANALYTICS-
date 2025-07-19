@@ -128,7 +128,7 @@ fig_heat = px.density_heatmap(
 )
 st.plotly_chart(fig_heat, use_container_width=True)
 
-# --- Special Task Chart ---
+# Special Task Chart - only between 3 PM to 5 PM IST
 now = datetime.now(pytz.timezone('Asia/Kolkata')).time()
 start_time = time(15, 0)
 end_time = time(17, 0)
