@@ -8,7 +8,10 @@ import pytz
 df = pd.read_csv("enhanced_internship_jobs_dataset.csv")
 
 st.set_page_config(layout="wide")
-st.title("🌐 Job Analytics Dashboard")
+st.title("Job Analytics Dashboard")
+
+st.subheader("📊 Job Insights Based on Current Filters (No Time Restriction)")
+
 st.markdown("### All data is sourced from the Indeed job portal.")
 # --- Sidebar Filters ---
 st.sidebar.header("🔍 Filter Jobs")
@@ -128,28 +131,61 @@ fig_heat = px.density_heatmap(
 )
 st.plotly_chart(fig_heat, use_container_width=True)
 
-# Special Task Chart - only between 3 PM to 5 PM IST
+
+# --- Special Task Chart (visible only from 3 PM to 5 PM IST) ---
 now = datetime.now(pytz.timezone('Asia/Kolkata')).time()
 start_time = time(15, 0)
-end_time = time(19, 0)
+end_time = time(17, 0)
 
 special_df = df[
     (df["country"].isin(["India", "Germany"])) &
-    (df["qualification"] == "B.tech") &
-    (df["employment_type"] == "Full time") &
+    (df["qualification"].str.lower() == "b.tech") &
+    (df["employment_type"].str.lower() == "full time") &
     (df["experience_years"] > 2) &
     (df["job_title"].isin(["Data Scientist", "Art Teacher", "AeroSpace Engineer"])) &
     (df["salary_usd"] > 10000) &
-    (df["gender_preference"] == "Female") &
-    (pd.to_datetime(df["posting_date"], errors="coerce") < pd.to_datetime("2023-08-01", errors="coerce"))
+    (df["gender_preference"].str.lower() == "female") &
+    (pd.to_datetime(df["posting_date"], errors="coerce") < pd.to_datetime("2023-08-01"))
 ]
-
 if start_time <= now <= end_time and not special_df.empty:
-    st.subheader("✅ Special Chart (India vs Germany Jobs Meeting Criteria)")
-    task_fig = px.bar(special_df, x="job_title", y="salary_usd", color="country",
-                      color_discrete_map={"India": "orange", "Germany": "green"},
-                      title="Special Task Salary Chart")
+    st.markdown("### ✅ Special Job Insights (Visible between 3 PM – 5 PM IST Only)")
+
+    # 🌟 Highlight Key Stats
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("🎯 Total Jobs", f"{special_df.shape[0]}")
+    col2.metric("💰 Avg Salary", f"${special_df['salary_usd'].mean():,.0f}")
+    col3.metric("👩‍💼 Avg Exp", f"{special_df['experience_years'].mean():.1f} yrs")
+
+    country_counts = special_df['country'].value_counts()
+    india_count = country_counts.get("India", 0)
+    germany_count = country_counts.get("Germany", 0)
+    col4.metric("🌍 India vs Germany", f"{india_count} 🇮🇳 / {germany_count} 🇩🇪")
+
+    # Special Bar Chart
+    task_fig = px.bar(
+        special_df,
+        x="job_title",
+        y="salary_usd",
+        color="country",
+        color_discrete_map={"India": "orange", "Germany": "green"},
+        title="💼 Salary Distribution (Only India & Germany, Female Preference, B.Tech, >2 yrs exp, >$10k Salary)",
+    )
     st.plotly_chart(task_fig, use_container_width=True)
+
+    # Summary Note
+    st.markdown(f"""
+    **📝 Conditions Applied**:
+    - 🌍 Country: **India**, **Germany**  
+    - 🎓 Qualification: **B.Tech**  
+    - 🕒 Employment Type: **Full time**  
+    - 👩 Gender Preference: **Female**  
+    - 💰 Salary: **> $10,000**  
+    - 🧠 Experience: **> 2 years**  
+    - 🧾 Job Titles: **Data Scientist**, **Art Teacher**, **AeroSpace Engineer**  
+    - 📅 Posted Before: **01 Aug 2023**
+    """)
+else:
+    st.markdown("⏳ **Special chart is available only from 3 PM to 5 PM IST. Come back later to see it!**")
 
 st.caption("© 2025 Job Insights Dashboard")
 
