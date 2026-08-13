@@ -4,3 +4,4 @@ plotly
 matplotlib
 altair
 calplot
+pytz
